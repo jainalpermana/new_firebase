@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Admin</title>
+	<style>
+		body{
+			font-family: sans-serif;
+		}
+		main{
+			display:flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+		main > img {
+			height: 200px;
+			margin: 5px;
+		}
+	</style>
+</head>
+<body>
+	<h1>WEB ADMIN</h1>
+	<!--create update delete-->
+	<div>
+		<label for="name"> Name Lokasi:-</label>
+		<input id="name" type="text">
+		
+	</div>
+
+	<div>
+		<button id="insert">insert</button>
+		<button id="insert">delete</button>
+		<button id="insert">Update</button>
+	</div>
+
+	<!-- upload foto -->
+	<h1>Upload File</h1>
+	<input type="file" id="inpBilde">
+	<main id="main"></main>
+	<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBx9HYxUMvh_RdP9N0PcLoQgS7WSk8vTMc",
+    authDomain: "web-quickstart-19beb.firebaseapp.com",
+    databaseURL: "https://web-quickstart-19beb.firebaseio.com",
+    projectId: "web-quickstart-19beb",
+    storageBucket: "web-quickstart-19beb.appspot.com",
+    messagingSenderId: "170974178445"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script type="text/javascript">
+  (function (){  
+
+		// codingan CRUD
+		var Gname = document.getElementById('name');
+		var insert = document.getElementById('insert');	
+
+
+		//code insert 
+		insert.addEventListener('click' , e=>{
+			var name = Gname.value;
+			var dbInsert = firebase.database().ref('lokasi/3').push().child('name').set(name)
+		});
+
+		var update = document.getElementById('overlayBtn');
+		if(update){
+  		update.addEventListener('click', swapper, false);
+  			var name = Gname.value;
+			var dbUpdate = firebase.database().ref().update({name2 : name});
+		}
+
+		var remove = document.getElementById('overlayBtn');
+		if(remove){
+  		remove.addEventListener('click', swapper, false);
+  			var name = Gname.value;
+			var dbremove = firebase.database().ref().remove({name2 : name});
+		}
+
+		// codingan upload foto
+		let database = firebase.database();
+		let storage = firebase.storage();
+
+		let inpBilde = document.getElementById("inpBilde");
+		let main = document.getElementById("main");
+
+		// larger URL til bilder
+		let bildeurler = database.ref("bildeurler");
+
+		function lagreURL(snap){
+			let url = snap.downloadURL;
+			bildeurler.push(url);
+		}
+
+		function lastOppBilde(){
+			//fila som er valgt i input feltet
+			let bilde = this.files[0];
+
+			let bildenavn = storage.ref("minefinebilder/"  + new Date());
+			bildenavn.put(bilde).then(lagreURL);// Laster opp bilde
+
+		}
+
+		function visiBilder(snap){
+			let url = snap.val();
+			main.innerHTML += `<img src="${url}">`; 
+		}
+			
+
+
+		inpBilde.onchange = lastOppBilde;
+		bildeurler.on("child_added", visiBilder);
+
+}());
+	
+</script>
+
+
+	
+</body>
+</html>
